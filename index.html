@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRJ Flow Study Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+  :root{--bg:#0f1117;--surface:#181b24;--sh:#1e2230;--sa:#252a38;--border:#2a2f3e;--ba:#3d4455;--text:#e2e4ea;--td:#8b90a0;--tm:#5c6070;--accent:#f97316;--ad:rgba(249,115,22,.12);--ab:rgba(249,115,22,.3);--green:#22c55e;--gd:rgba(34,197,94,.12);--red:#ef4444;--rd:rgba(239,68,68,.1);--blue:#3b82f6;--bd:rgba(59,130,246,.12);--bb:rgba(59,130,246,.3);--yellow:#eab308;--yd:rgba(234,179,8,.1);--yb:rgba(234,179,8,.3);--purple:#a78bfa;--pd:rgba(167,139,250,.1);--pb:rgba(167,139,250,.3);--cyan:#06b6d4;--cd:rgba(6,182,212,.1);--cb:rgba(6,182,212,.3);--teal:#14b8a6;--tld:rgba(20,184,166,.1);--tlb:rgba(20,184,166,.3);--rose:#f43f5e;--rod:rgba(244,63,94,.1);--rob:rgba(244,63,94,.3);--r:8px;--fm:'JetBrains Mono',monospace;--fs:'IBM Plex Sans',sans-serif}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--fs);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+  .app{max-width:760px;margin:0 auto;padding:16px 16px 80px}
+  header{text-align:center;padding:20px 0 12px;border-bottom:1px solid var(--border)}
+  .htag{display:inline-block;font-family:var(--fm);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);background:var(--ad);border:1px solid var(--ab);padding:3px 10px;border-radius:4px;margin-bottom:10px}
+  header h1{font-size:22px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px}
+  header .sub{font-size:13px;color:var(--td)}
+  .rev{font-family:var(--fm);font-size:10px;color:var(--tm);margin-top:8px}
+  .sticky{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border)}
+  .ptabs{display:flex;gap:2px;overflow-x:auto;padding:8px 0 0;scrollbar-width:none}.ptabs::-webkit-scrollbar{display:none}
+  .ptab{font-family:var(--fm);font-size:10px;font-weight:600;letter-spacing:.3px;padding:8px 12px;border:none;background:none;color:var(--tm);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;flex-shrink:0}
+  .ptab:hover{color:var(--td)}.ptab.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .sbar{display:flex;gap:6px;padding:8px 0;overflow-x:auto;scrollbar-width:none}.sbar::-webkit-scrollbar{display:none}
+  .sbtn{font-family:var(--fm);font-size:9px;font-weight:700;letter-spacing:.5px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--td);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+  .sbtn:hover:not(.dis){border-color:var(--ba);color:var(--text)}
+  .sbtn.dis{opacity:.35;cursor:default}
+  .sbtn.apu{border-color:var(--cb);color:var(--cyan);background:var(--cd)}.sbtn.apu.dis{border-color:var(--border);color:var(--tm);background:var(--surface)}
+  .sbtn.coldwx{border-color:var(--tlb);color:var(--teal);background:var(--tld)}.sbtn.coldwx.dis{border-color:var(--border);color:var(--tm);background:var(--surface)}
+  .sbtn.cign{border-color:var(--rob);color:var(--rose);background:var(--rod)}.sbtn.cign.dis{border-color:var(--border);color:var(--tm);background:var(--surface)}
+  .vbar{display:flex;align-items:center;justify-content:center;gap:4px;padding:10px 0 6px}
+  .vbtn{font-family:var(--fm);font-size:10px;font-weight:600;padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--tm);cursor:pointer;transition:all .15s}
+  .vbtn:hover{border-color:var(--ba);color:var(--td)}.vbtn.active{background:var(--ad);border-color:var(--ab);color:var(--accent)}
+  .ctrls{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);margin-bottom:4px;flex-wrap:wrap;gap:6px}
+  .ctrls .left{font-size:11px;color:var(--td);font-family:var(--fm)}.ctrls .acts{display:flex;gap:5px}
+  .btn{font-family:var(--fs);font-size:11px;font-weight:500;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--td);cursor:pointer;transition:all .15s}
+  .btn:hover{background:var(--sh);color:var(--text);border-color:var(--ba)}.btn.dng{color:var(--red)}.btn.dng:hover{background:var(--rd);border-color:var(--red)}
+  .pbc{padding:6px 0 10px}.plbl{display:flex;justify-content:space-between;font-family:var(--fm);font-size:10px;color:var(--tm);margin-bottom:4px}
+  .ptrk{height:3px;background:var(--surface);border-radius:2px;overflow:hidden}.pfill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s ease}
+  .shdr{display:flex;align-items:center;gap:8px;padding:8px 0 6px;margin-top:6px}
+  .slbl{font-family:var(--fm);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm)}
+  .sln{flex:1;height:1px;background:var(--border)}
+  .snote{font-family:var(--fm);font-size:9px;color:var(--tm);font-style:italic}
+  .rtag{font-family:var(--fm);font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0}
+  .rtag.pm{color:var(--blue);background:var(--bd);border:1px solid var(--bb)}
+  .rtag.pf{color:var(--purple);background:var(--pd);border:1px solid var(--pb)}
+  .rtag.cp{color:var(--green);background:var(--gd);border:1px solid rgba(34,197,94,.3)}
+  .tpnl{border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;overflow:hidden}
+  .thdr{display:flex;align-items:center;padding:9px 14px;cursor:pointer;background:var(--surface);gap:10px;user-select:none;transition:background .15s}.thdr:hover{background:var(--sh)}
+  .tico{font-family:var(--fm);font-size:10px;font-weight:700;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:5px;flex-shrink:0}
+  .tico.has{background:var(--yd);color:var(--yellow);border:1px solid var(--yb)}.tico.none{background:var(--sa);color:var(--tm)}
+  .tlbl{font-size:13px;font-weight:600;flex:1}.tlbl.dim{color:var(--tm)}
+  .tcnt{font-family:var(--fm);font-size:10px;color:var(--tm)}
+  .tchv{color:var(--tm);transition:transform .2s;font-size:12px}
+  .tpnl.exp .tchv{transform:rotate(90deg);color:var(--yellow)}
+  .tbody{display:none;border-top:1px solid var(--border);background:var(--bg)}.tpnl.exp .tbody{display:block}
+  .titm{border-bottom:1px solid var(--border)}.titm:last-child{border-bottom:none}
+  .titmh{display:flex;align-items:center;padding:8px 14px 8px 20px;cursor:pointer;gap:8px;transition:background .15s;user-select:none}.titmh:hover{background:var(--surface)}
+  .ttag{font-family:var(--fm);font-size:9px;font-weight:700;color:var(--yellow);background:var(--yd);border:1px solid var(--yb);padding:1px 5px;border-radius:3px;flex-shrink:0}
+  .ttl{font-size:12px;font-weight:500;flex:1;min-width:0}
+  .tbdg{font-family:var(--fm);font-size:10px;color:var(--tm);flex-shrink:0}.tbdg.has{color:var(--green)}
+  .tichv{color:var(--tm);transition:transform .2s;font-size:11px}.titm.exp .tichv{transform:rotate(90deg);color:var(--yellow)}
+  .tcont{display:none;padding:6px 14px 12px 20px;border-top:1px solid var(--border);background:rgba(0,0,0,.15)}.titm.exp .tcont{display:block}
+  .fi{border:1px solid var(--border);border-radius:var(--r);margin-bottom:4px;overflow:hidden;transition:border-color .2s}
+  .fi:hover{border-color:var(--ba)}.fi.exp{border-color:var(--ab);margin-bottom:7px}
+  .fh{display:flex;align-items:center;padding:9px 14px;cursor:pointer;background:var(--surface);transition:background .15s;user-select:none;gap:10px}.fh:hover{background:var(--sh)}
+  .fnum{font-family:var(--fm);font-size:10px;font-weight:700;color:var(--accent);background:var(--ad);min-width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:5px;flex-shrink:0;padding:0 4px}
+  .ftl{font-size:13px;font-weight:600;flex:1;line-height:1.4}
+  .ffod{font-family:var(--fm);font-size:9px;font-weight:700;color:var(--accent);background:var(--ad);border:1px solid var(--ab);padding:1px 5px;border-radius:3px;margin-right:4px}
+  .fbdg{font-family:var(--fm);font-size:10px;color:var(--tm);flex-shrink:0}.fbdg.has{color:var(--green)}
+  .fchv{color:var(--tm);transition:transform .2s;font-size:12px;flex-shrink:0}.fi.exp .fchv{transform:rotate(90deg);color:var(--accent)}
+  .fcont{display:none;background:var(--bg);border-top:1px solid var(--border);padding:8px 14px 12px}.fi.exp .fcont{display:block}
+  .ffsub{display:flex;align-items:center;gap:6px;padding:5px 8px;margin:8px 0 4px;background:var(--ad);border:1px solid var(--ab);border-radius:6px;font-size:11px;font-weight:600;color:var(--accent)}
+  .ffsub .ffl{font-family:var(--fm);font-size:9px;font-weight:700;background:var(--accent);color:#fff;width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:4px;flex-shrink:0}
+  .sl{list-style:none;padding:0}
+  .si{display:flex;align-items:flex-start;gap:8px;padding:5px 8px;border-radius:5px;margin-bottom:2px;transition:background .1s}.si:hover{background:var(--surface)}
+  .sb{width:5px;height:5px;border-radius:50%;background:var(--ba);margin-top:7px;flex-shrink:0}
+  .st{flex:1;font-size:12px;line-height:1.5;color:var(--text)}
+  .sa{display:flex;gap:2px;opacity:0;transition:opacity .15s;flex-shrink:0}.si:hover .sa{opacity:1}
+  .ib{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:4px;border:none;background:transparent;color:var(--tm);cursor:pointer;font-size:11px;transition:all .12s}
+  .ib:hover{background:var(--sa);color:var(--text)}.ib.del:hover{background:var(--rd);color:var(--red)}
+  .aa{margin-top:5px;display:flex;gap:5px}
+  .aa input{flex:1;font-family:var(--fs);font-size:12px;padding:6px 10px;border-radius:5px;border:1px solid var(--border);background:var(--surface);color:var(--text);outline:none;transition:border-color .15s}
+  .aa input::placeholder{color:var(--tm)}.aa input:focus{border-color:var(--ab)}
+  .abtn{font-family:var(--fs);font-size:11px;font-weight:600;padding:6px 11px;border-radius:5px;border:1px solid var(--ab);background:var(--ad);color:var(--accent);cursor:pointer;transition:all .15s;white-space:nowrap}.abtn:hover{background:var(--accent);color:#fff}
+  .ei{flex:1;font-family:var(--fs);font-size:12px;padding:3px 7px;border-radius:4px;border:1px solid var(--ab);background:var(--surface);color:var(--text);outline:none}
+  .es{text-align:center;padding:12px;color:var(--tm);font-size:12px;font-style:italic}
+  .nfm{text-align:center;padding:20px 14px;color:var(--tm);font-size:13px;border:1px dashed var(--border);border-radius:var(--r);margin-bottom:4px}
+  .btld{display:flex;align-items:center;gap:10px;padding:6px 0 8px;margin-bottom:4px}
+  .btld .btll{flex:1;height:1px;border-top:1px dashed var(--ba)}.btld .btlb{font-family:var(--fm);font-size:9px;font-weight:600;letter-spacing:1px;color:var(--tm);text-transform:uppercase}
+  /* Overlay */
+  .obk{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s}.obk.open{opacity:1;pointer-events:auto}
+  .opn{position:fixed;bottom:0;left:0;right:0;max-height:85vh;background:var(--bg);border-top:2px solid var(--accent);border-radius:16px 16px 0 0;z-index:201;transform:translateY(100%);transition:transform .3s ease;overflow-y:auto}.opn.open{transform:translateY(0)}
+  .ohd{position:sticky;top:0;z-index:5;background:var(--bg);padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+  .ohi{font-family:var(--fm);font-size:11px;font-weight:700;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px}
+  .ohi.apu{background:var(--cd);color:var(--cyan);border:1px solid var(--cb)}
+  .ohi.coldwx{background:var(--tld);color:var(--teal);border:1px solid var(--tlb)}
+  .ohi.cign{background:var(--rod);color:var(--rose);border:1px solid var(--rob)}
+  .oht{flex:1;font-size:16px;font-weight:700}.ohp{font-family:var(--fm);font-size:10px;color:var(--tm)}
+  .ocl{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--td);cursor:pointer;font-size:16px;transition:all .15s}.ocl:hover{background:var(--sh);color:var(--text)}
+  .obd{padding:12px 20px 24px}
+  .sblk{border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;overflow:hidden}
+  .sblkh{display:flex;align-items:center;padding:10px 14px;cursor:pointer;background:var(--surface);gap:10px;user-select:none;transition:background .15s}.sblkh:hover{background:var(--sh)}
+  .sblkt{font-size:13px;font-weight:600;flex:1}
+  .sblkb{font-family:var(--fm);font-size:10px;color:var(--tm)}.sblkb.has{color:var(--green)}
+  .sblka{display:flex;gap:2px;opacity:0;transition:opacity .15s}.sblkh:hover .sblka{opacity:1}
+  .sblkc{color:var(--tm);transition:transform .2s;font-size:12px}
+  .sblk.exp .sblkc{transform:rotate(90deg);color:var(--cyan)}
+  .sblkcont{display:none;padding:8px 14px 12px;border-top:1px solid var(--border);background:var(--bg)}.sblk.exp .sblkcont{display:block}
+  .oaa{margin-top:10px;display:flex;gap:6px;padding:0 0 8px}
+  .oaa input{flex:1;font-family:var(--fs);font-size:12px;padding:7px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);outline:none}
+  .oaa input::placeholder{color:var(--tm)}.oaa input:focus{border-color:var(--cb)}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(50px);font-family:var(--fs);font-size:12px;padding:8px 18px;border-radius:8px;background:var(--sa);border:1px solid var(--ba);color:var(--text);opacity:0;transition:all .25s ease;pointer-events:none;z-index:300}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  @media(max-width:600px){.app{padding:10px 10px 80px}header h1{font-size:18px}.ptab{padding:7px 9px;font-size:9px}.vbtn{font-size:9px;padding:4px 10px}.opn{max-height:90vh}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="htag">CRJ Study Guide</div>
+    <h1>Flow Checklist</h1>
+    <div class="sub">Add your own SOPM notes &amp; sub-steps under each item</div>
+    <div class="rev">SOPM REV 2025.06 &middot; APU OPS REV 11 (10 APR 24) &middot; Guide v5</div>
+  </header>
+  <div class="sticky">
+    <div class="ptabs" id="pt"></div>
+    <div class="sbar" id="sb"></div>
+  </div>
+  <div class="vbar" id="vb"></div>
+  <div class="ctrls"><div class="left" id="sc"></div><div class="acts">
+    <button class="btn" onclick="taf(1)">Expand All</button>
+    <button class="btn" onclick="taf(0)">Collapse All</button>
+    <button class="btn" onclick="expData()" title="Download all notes as JSON">&#x2B07; Export</button>
+    <button class="btn" onclick="document.getElementById('impFile').click()" title="Import notes from JSON">&#x2B06; Import</button>
+    <button class="btn dng" onclick="cr()">Reset Notes</button>
+  </div></div>
+  <input type="file" id="impFile" accept=".json" style="display:none" onchange="impData(event)">
+  <div class="pbc"><div class="plbl"><span>Study progress</span><span id="pp">0%</span></div><div class="ptrk"><div class="pfill" id="pf" style="width:0%"></div></div></div>
+  <div id="ca"></div>
+</div>
+<div class="obk" id="obk" onclick="co()"></div>
+<div class="opn" id="opn"><div class="ohd" id="ohd"></div><div class="obd" id="obd"></div></div>
+<div class="toast" id="tst"></div>
+<script>
+const PG=[{id:"safety",l:"SAFETY"},{id:"originating",l:"ORIGINATING"},{id:"prestart",l:"PRE-START"},{id:"enginestart",l:"ENG START"},{id:"taxi",l:"TAXI"},{id:"setaxi",l:"SE TAXI"},{id:"rwyperf",l:"RWY/PERF"},{id:"beforeto",l:"BFR T/O"},{id:"afterto",l:"AFT T/O"},{id:"cruise",l:"CRUISE"},{id:"descent",l:"DESCENT"},{id:"beforeldg",l:"BFR LDG"},{id:"afterldg",l:"AFT LDG"},{id:"eng1shut",l:"ENG1 SHUT"},{id:"shutdown",l:"SHUTDOWN"},{id:"terminating",l:"TERMINATING"}];
+const VR=[{id:"200",l:"CRJ-200"},{id:"5-900",l:"CRJ-500/700/900"}];
+const TT=(t,r)=>({title:t,role:r||null});
+const FF=(n,t,o)=>({num:n,title:t,...(o||{})});
+
+// ═══ FLOW DATA ═══
+const D={
+safety:{"200":{tasks:[TT("FFOD OBSERVER O\u2082 MASK TEST")],steps:[FF(1,"MAINTENANCE STATUS"),FF(2,"EMERGENCY EQUIPMENT",{subtitle:"(AND DOCUMENTS/EQUIPMENT)"}),FF(3,"CIRCUIT BREAKERS"),FF(4,"NOSEWHEEL STEERING"),FF(5,"HYDRAULIC PUMPS"),FF(6,"LANDING GEAR LEVER"),FF(7,"FLAP LEVER"),FF(8,"SPOILER LEVER"),FF(9,"RADAR"),FF(10,"PARKING BRAKE"),FF(11,"ADG MANUAL RELEASE"),FF(12,"BATTERY MASTER"),FF(13,"FIREX MONITOR TEST",{ffod:1}),FF(14,"AC POWER"),FF(15,"HYDRAULIC PUMP 3A")]},"5-900":{tasks:[TT("FFOD OBSERVER O\u2082 MASK TEST")],steps:[FF(1,"MAINTENANCE STATUS"),FF(2,"EMERGENCY EQUIPMENT",{subtitle:"(AND DOCUMENTS/EQUIPMENT)"}),FF(3,"CIRCUIT BREAKERS"),FF(4,"NOSEWHEEL STEERING"),FF(5,"HYDRAULIC PUMPS"),FF(6,"LANDING GEAR LEVER"),FF(7,"FLAP LEVER"),FF(8,"SPOILER LEVER"),FF(9,"RADAR"),FF(10,"PARKING BRAKE"),FF(11,"ADG MANUAL RELEASE"),FF(12,"EMERGENCY FLAP"),FF(13,"BATTERY MASTER"),FF(14,"FIREX MONITOR TEST",{ffod:1}),FF(15,"AC POWER")]}},
+originating:{"200":{tasks:[TT("GEAR/ADG PINS"),TT("AIRWORTHINESS ACCEPTANCE")],steps:[FF(1,"ELECTRICS"),FF(2,"CARGO FIRE TEST",{ffod:1}),FF(3,"LIGHTS"),FF(4,"FUEL PANEL"),FF(5,"BLEEDS",{subs:[{letter:"A",title:"BLEED DETECTION TEST",ffod:1}]}),FF(6,"START PANEL"),FF(7,"HYDRAULIC TEST"),FF(8,"PRESSURIZATION"),FF(9,"AIR CONDITIONING"),FF(10,"ANTI-ICE",{subs:[{letter:"A",title:"ICE DETECTOR TEST",ffod:1}]}),FF(11,"EMERGENCY LIGHTS"),FF(12,"EGPWS TEST",{ffod:1}),FF(13,"STALL TEST",{ffod:1}),FF(14,"CLOCKS"),FF(15,"EFIS"),FF(16,"CVR TEST",{ffod:1}),FF(17,"STANDBY INSTRUMENTS"),FF(18,"O\u2082 PRESSURE"),FF(19,"UPPER PEDESTAL",{subs:[{letter:"A",title:"MLG OVERHEAT TEST",ffod:1}]}),FF(20,"THRUST LEVER QUADRANT"),FF(21,"LOWER PEDESTAL",{subs:[{letter:"A",title:"RADAR TEST",ffod:1},{letter:"B",title:"STAB TRIM TEST",ffod:1}]})]},"5-900":{tasks:[TT("GEAR/ADG PINS"),TT("AIRWORTHINESS ACCEPTANCE")],steps:[FF(1,"ELECTRICS"),FF(2,"HYDRAULIC SOVs"),FF(3,"LIGHTS"),FF(4,"FUEL PANEL"),FF(5,"BLEEDS"),FF(6,"START PANEL"),FF(7,"HYDRAULIC TEST"),FF(8,"PRESSURIZATION"),FF(9,"AIR CONDITIONING"),FF(10,"ANTI-ICE",{subs:[{letter:"A",title:"ICE DETECTOR TEST",ffod:1}]}),FF(11,"EMERGENCY LIGHTS"),FF(12,"STALL TEST",{ffod:1}),FF(13,"CLOCKS"),FF(14,"EFIS"),FF(15,"CVR TEST",{ffod:1}),FF(16,"STANDBY INSTRUMENTS"),FF(17,"O\u2082 PRESSURE"),FF(18,"UPPER PEDESTAL",{subs:[{letter:"A",title:"MLG OVERHEAT TEST",ffod:1}]}),FF(19,"THRUST LEVER QUADRANT"),FF(20,"LOWER PEDESTAL",{subs:[{letter:"A",title:"RADAR TEST",ffod:1}]})]}},
+prestart:{"200":{tasks:[TT("PREFLIGHT CHECKS"),TT("ALTIMETERS"),TT("CLEARANCE"),TT("FMS (FLIGHT PLAN VERIFICATION)"),TT("FLIGHT INSTRUMENTS"),TT("RADIOS"),TT("FUEL QUANTITY AND BALANCE"),TT("FFOD CREW O\u2082, MASK TEST"),TT("OXYGEN"),TT("CABIN SIGNS"),TT("TAKEOFF BRIEFING")],steps:[FF(1,"PRESSURIZATION"),FF(2,"ANTI-SKID"),FF(3,"YAW DAMPERS")]},"5-900":{tasks:[TT("PREFLIGHT CHECKS"),TT("ALTIMETERS"),TT("CLEARANCE"),TT("FMS (FLIGHT PLAN VERIFICATION)"),TT("FLIGHT INSTRUMENTS"),TT("RADIOS"),TT("FUEL QUANTITY AND BALANCE"),TT("FFOD CREW O\u2082 MASK TEST"),TT("OXYGEN"),TT("CABIN SIGNS"),TT("TAKEOFF BRIEFING")],steps:[FF(1,"PRESSURIZATION"),FF(2,"ANTI-SKID",{ffod:1}),FF(3,"YAW DAMPERS")]}},
+enginestart:{"200":{tasks:[TT("APU"),TT("MANIFEST"),TT("TAKEOFF DATA"),TT("TRIMS"),TT("TRANSPONDER"),TT("SEAT BELTS AND SHOULDER HARNESSES")],steps:[FF(1,"FUEL PUMPS"),FF(2,"IGNITION"),FF(3,"HYDRAULIC PUMP 3A"),FF(4,"BEACON"),FF(5,"NOSE WHEEL STEERING"),FF(6,"DOORS")]},"5-900":{tasks:[TT("APU"),TT("MANIFEST"),TT("TAKEOFF DATA"),TT("TRIMS"),TT("TRANSPONDER"),TT("SEAT BELTS AND SHOULDER HARNESSES")],steps:[FF(1,"FUEL PUMPS"),FF(2,"HYDRAULIC PUMP 3A"),FF(3,"BEACON"),FF(4,"NOSE WHEEL STEERING"),FF(5,"DOORS")]}},
+taxi:{"200":{tasks:[],steps:[FF(1,"GENERATOR(S)"),FF(2,"BLEEDS/APU"),FF(3,"IGNITION"),FF(4,"ICE PROTECTION",{ffod:1}),FF(5,"APR",{ffod:1}),FF(6,"ELECTRICS"),FF(7,"RUDDER"),FF(8,"NOSE WHEEL STEERING"),FF(9,"ELECTRONIC DEVICES")]},"5-900":{tasks:[],steps:[FF(1,"BLEEDS/APU"),FF(2,"ELECTRICS"),FF(3,"RUDDER"),FF(4,"NOSE WHEEL STEERING"),FF(5,"ELECTRONIC DEVICES")]}},
+setaxi:{"200":{tasks:[],steps:[FF(1,"GENERATOR 2 \u2014 ON"),FF(2,"L BOOST PUMP \u2014 OFF"),FF(3,"ELECTRICS, F/CTL \u2014 SELECT"),FF(4,"RUDDER \u2014 CHECK"),FF(5,"NOSE WHEEL STEERING \u2014 ON"),FF(6,"ELECTRONIC DEVICES")]},"5-900":{tasks:[],steps:[FF(1,"L BOOST PUMP \u2014 OFF"),FF(2,"APU \u2014 SHUTDOWN"),FF(3,"ELECTRICS, F/CTL \u2014 SELECT"),FF(4,"RUDDER \u2014 CHECK"),FF(5,"NOSE WHEEL STEERING \u2014 ON"),FF(6,"ELECTRONIC DEVICES")]}},
+rwyperf:{"200":{tasks:[TT("FMS (FLIGHT PLAN VERIFICATION)"),TT("FLIGHT INSTRUMENTS"),TT("FLAPS"),TT("BLEEDS/APU"),TT("TAKEOFF DATA"),TT("TRIMS"),TT("TAKEOFF BRIEFING")],steps:[]},"5-900":{tasks:[TT("FMS (FLIGHT PLAN VERIFICATION)"),TT("FLIGHT INSTRUMENTS"),TT("FLAPS"),TT("BLEEDS/APU"),TT("TAKEOFF DATA"),TT("TRIMS"),TT("TAKEOFF BRIEFING")],steps:[]}},
+beforeto:{"200":{tasks:[],flowNote:"Below the Line",steps:[FF(1,"LIGHTS")]},"5-900":{tasks:[],flowNote:"Below the Line",steps:[FF(1,"LIGHTS")]}},
+afterto:{"200":{tasks:[],flowRole:"PM",steps:[FF(1,"CLIMB THRUST"),FF(2,"CROSS FLOW"),FF(3,"BLEED VALVES"),FF(4,"APU STOP"),FF(5,"IGNITION"),FF(6,"WINDSHIELD HEAT"),FF(7,"LANDING GEAR"),FF(8,"FLAPS"),FF(9,"THRUST REVERSERS"),FF(10,"PERF PAGE"),FF(11,"CAS")]},"5-900":{tasks:[],flowRole:"PM",steps:[FF(1,"CLIMB THRUST"),FF(2,"CROSS FLOW"),FF(3,"APU STOP"),FF(4,"IGNITION"),FF(5,"WINDSHIELD HEAT"),FF(6,"LANDING GEAR"),FF(7,"FLAPS"),FF(8,"THRUST REVERSERS"),FF(9,"CAS")]}},
+cruise:{"200":{tasks:[TT("CRUISE SPEED"),TT("CRUISE POWER")],steps:[]},"5-900":{tasks:[TT("CRUISE SPEED"),TT("CRUISE POWER")],steps:[]}},
+descent:{"200":{tasks:[TT("CURRENT WEATHER","PM"),TT("LANDING DATA","PM"),TT("APPROACH BRIEFING","PF"),TT("ALTIMETER","CP"),TT("LIGHTS","CP"),TT("SEAT BELT SIGN","CP"),TT("STERILE FLIGHT DECK SIGNAL","CP"),TT("SEAT BELT AND SHOULDER HARNESS","CP"),TT("CALL TO COMPANY","PM")],taskNote:"Below FL180/TOD",taskNoteAfter:3,flowRole:"PM",steps:[FF(1,"PRESSURIZATION"),FF(2,"FUEL"),FF(3,"THRUST REVERSERS"),FF(4,"CAS")]},"5-900":{tasks:[TT("CURRENT WEATHER","PM"),TT("LANDING DATA","PM"),TT("APPROACH BRIEFING","PF"),TT("ALTIMETER","CP"),TT("LIGHTS","CP"),TT("SEAT BELT SIGN","CP"),TT("STERILE FLIGHT DECK SIGNAL","CP"),TT("SEAT BELT AND SHOULDER HARNESS","CP"),TT("CALL TO COMPANY","PM")],taskNote:"Below FL180/TOD",taskNoteAfter:3,flowRole:"PM",steps:[FF(1,"PRESSURIZATION"),FF(2,"FUEL"),FF(3,"THRUST REVERSERS"),FF(4,"CAS")]}},
+beforeldg:{"200":{tasks:[TT("FLIGHT SPOILERS","PM"),TT("FLAPS","PM"),TT("CABIN","PM"),TT("LANDING GEAR","PM")],steps:[]},"5-900":{tasks:[TT("FLIGHT SPOILERS","PM"),TT("FLAPS","PM"),TT("CABIN","PM"),TT("LANDING GEAR","PM")],steps:[]}},
+afterldg:{"200":{tasks:[],steps:[FF(1,"LIGHTS")]},"5-900":{tasks:[],steps:[FF(1,"LIGHTS")]}},
+eng1shut:{"200":{tasks:[],steps:[FF(1,"PARKING BRAKE"),FF(2,"L GENERATOR"),FF(3,"L THRUST LEVER"),FF(4,"SEAT BELT SIGN"),FF(5,"L BOOST PUMP"),FF(6,"FUEL FEED CHECK VALVE TEST, PART 2",{ffod:1})]},"5-900":{tasks:[],steps:[FF(1,"PARKING BRAKE"),FF(2,"L THRUST LEVER"),FF(3,"SEAT BELT SIGN"),FF(4,"L BOOST PUMP"),FF(5,"FUEL FEED CHECK VALVE TEST, PART 2",{ffod:1})]}},
+shutdown:{"200":{tasks:[],steps:[FF(1,"PARKING BRAKE"),FF(2,"AC POWER"),FF(3,"GENERATORS"),FF(4,"THRUST LEVERS"),FF(5,"SEAT BELT SIGN"),FF(6,"ANTI-ICE"),FF(7,"PACKS"),FF(8,"FUEL PUMPS"),FF(9,"BLEEDS"),FF(10,"HYDRAULIC PUMP 3A"),FF(11,"BEACON"),FF(12,"NOSE WHEEL STEERING")]},"5-900":{tasks:[],steps:[FF(1,"PARKING BRAKE"),FF(2,"AC POWER"),FF(3,"THRUST LEVERS"),FF(4,"SEAT BELT SIGN"),FF(5,"ANTI-ICE"),FF(6,"PACKS"),FF(7,"FUEL PUMPS"),FF(8,"HYDRAULIC PUMP 3A"),FF(9,"BEACON"),FF(10,"NOSE WHEEL STEERING")]}},
+terminating:{"200":{tasks:[],steps:[FF(1,"PARKING BRAKE"),FF(2,"THRUST REVERSERS"),FF(3,"STANDBY ATT"),FF(4,"EMERGENCY LIGHTS"),FF(5,"WINDSHIELD HEAT"),FF(6,"CARGO FAN"),FF(7,"HYDRAULIC PUMPS"),FF(8,"LIGHTS"),FF(9,"APU GENERATOR"),FF(10,"APU"),FF(11,"PACKS"),FF(12,"BLEEDS"),FF(13,"EXTERNAL AC POWER"),FF(14,"BATTERY MASTER")]},"5-900":{tasks:[],steps:[FF(1,"IRS"),FF(2,"PARKING BRAKE"),FF(3,"THRUST REVERSERS"),FF(4,"STANDBY ATT"),FF(5,"EMERGENCY LIGHTS"),FF(6,"WINDSHIELD HEAT"),FF(7,"CARGO FAN"),FF(8,"RECIRC FAN"),FF(9,"HYDRAULIC PUMPS"),FF(10,"LIGHTS"),FF(11,"APU"),FF(12,"PACKS"),FF(13,"EXTERNAL AC POWER"),FF(14,"BATTERY MASTER")]}},
+};
+
+// ═══ SUPPLEMENTAL PROCEDURE CONFIG ═══
+const SG=[{id:"apu",l:"APU",c:"apu"},{id:"coldwx",l:"COLD WX",c:"coldwx"},{id:"cign",l:"CONT IGN",c:"cign"}];
+
+const DSB={
+  apu:{
+    "200":[
+      {id:"apu_gnd",title:"APU Start \u2014 Ground"},
+      {id:"apu_cs",title:"APU Cold Soak Start"},
+      {id:"apu_flt",title:"APU Start \u2014 In Flight"},
+      {id:"apu_bl_eoff",title:"Bleed: Engines Off \u2192 APU"},
+      {id:"apu_bl_a2e",title:"Bleed Xfer: APU \u2192 Engine"},
+      {id:"apu_bl_e2a",title:"Bleed Xfer: Engine \u2192 APU"},
+      {id:"apu_sh_eoff",title:"APU Shutdown \u2014 Engines Off"},
+      {id:"apu_sh_eon",title:"APU Shutdown \u2014 Engines On"},
+    ],
+    "5-900":[
+      {id:"apu_gnd_59",title:"APU Start \u2014 Ground"},
+      {id:"apu_cs_59",title:"APU Cold Soak Start"},
+      {id:"apu_flt_59",title:"APU Start \u2014 In Flight"},
+      {id:"apu_bl_59",title:"APU Bleed Operation"},
+      {id:"apu_sh_59",title:"APU Shutdown"},
+    ],
+  },
+  coldwx:{
+    "200":[
+      {id:"cwx_gen",title:"Icing Conditions \u2014 General"},
+      {id:"cwx_aice_flt",title:"Anti-Ice \u2014 In Flight"},
+    ],
+    "5-900":[
+      {id:"cwx_gen",title:"Icing Conditions \u2014 General"},
+      {id:"cwx_aice_flt",title:"Anti-Ice \u2014 In Flight"},
+    ],
+  },
+  cign:{
+    "200":[{id:"cign_req",title:"Continuous Ignition Requirements"}],
+    "5-900":[{id:"cign_req",title:"Continuous Ignition Requirements"}],
+  },
+};
+
+// Page mapping: which blocks show where
+const SM={
+  apu:{
+    "200":{
+      safety:["apu_gnd","apu_cs"],originating:["apu_bl_eoff"],prestart:null,
+      enginestart:["apu_gnd","apu_cs","apu_bl_eoff"],
+      taxi:["apu_bl_a2e","apu_sh_eon"],setaxi:["apu_bl_a2e","apu_sh_eon"],
+      rwyperf:null,beforeto:null,afterto:null,
+      cruise:["apu_flt","apu_bl_e2a"],descent:["apu_flt","apu_bl_e2a"],beforeldg:["apu_flt","apu_bl_e2a"],
+      afterldg:["apu_gnd","apu_bl_e2a"],
+      eng1shut:["apu_gnd","apu_bl_e2a","apu_sh_eoff"],shutdown:["apu_gnd","apu_bl_e2a","apu_sh_eoff"],
+      terminating:["apu_sh_eoff"],
+    },
+    "5-900":{
+      safety:["apu_gnd_59","apu_cs_59"],originating:null,prestart:null,
+      enginestart:["apu_gnd_59","apu_cs_59"],
+      taxi:["apu_sh_59"],setaxi:["apu_sh_59"],rwyperf:null,beforeto:null,afterto:null,
+      cruise:["apu_flt_59"],descent:["apu_flt_59"],beforeldg:["apu_flt_59"],
+      afterldg:["apu_gnd_59"],eng1shut:["apu_sh_59"],shutdown:["apu_sh_59"],terminating:["apu_sh_59"],
+    },
+  },
+  coldwx:{
+    "200":{safety:["cwx_gen"],originating:null,prestart:null,enginestart:null,taxi:["cwx_gen"],setaxi:["cwx_gen"],rwyperf:null,beforeto:["cwx_gen"],afterto:["cwx_aice_flt"],cruise:["cwx_aice_flt"],descent:["cwx_aice_flt"],beforeldg:["cwx_aice_flt"],afterldg:null,eng1shut:null,shutdown:null,terminating:null},
+    "5-900":{safety:["cwx_gen"],originating:null,prestart:null,enginestart:null,taxi:["cwx_gen"],setaxi:["cwx_gen"],rwyperf:null,beforeto:["cwx_gen"],afterto:["cwx_aice_flt"],cruise:["cwx_aice_flt"],descent:["cwx_aice_flt"],beforeldg:["cwx_aice_flt"],afterldg:null,eng1shut:null,shutdown:null,terminating:null},
+  },
+  cign:{
+    "200":{safety:null,originating:null,prestart:null,enginestart:null,taxi:["cign_req"],setaxi:null,rwyperf:null,beforeto:["cign_req"],afterto:null,cruise:["cign_req"],descent:["cign_req"],beforeldg:["cign_req"],afterldg:null,eng1shut:null,shutdown:null,terminating:null},
+    "5-900":{safety:null,originating:null,prestart:null,enginestart:null,taxi:null,setaxi:null,rwyperf:null,beforeto:null,afterto:null,cruise:["cign_req"],descent:["cign_req"],beforeldg:["cign_req"],afterldg:null,eng1shut:null,shutdown:null,terminating:null},
+  },
+};
+
+// ═══ PRE-POPULATED NOTES ═══
+const PREPOP={
+// CRJ-200 APU
+"supp|apu|apu_gnd":["APU GEN \u2192 OFF","Check: APU LCV, ISOL, PWR/FUEL all OFF","NOTE: PWR/FUEL must be deselected between each start","APU PWR FUEL \u2192 ON","Check ED-2: APU SOV OPEN, IN BITE (5-6s), gauges displayed, DOOR OPEN","APU START/STOP \u2192 START","Check ED-2: APU START msg \u2192 extinguished ~50% RPM","Check switch: START ext ~50%, AVAIL lit ~95%","APU GEN \u2192 ON","Check ED-2: AC synoptic \u2014 voltage/freq/load normal","Check ED-2: DC synoptic \u2014 TRU/voltage/load normal"],
+"supp|apu|apu_cs":["APU START/STOP \u2192 momentarily START","APU PWR FUEL \u2192 momentarily ON","Then complete normal ground start procedure"],
+"supp|apu|apu_flt":["NOTE: Only start with APU GEN ON when both GEN 1/2 powering their buses","NOTE: PWR/FUEL must be deselected before each start","APU PWR FUEL \u2192 ON","APU START/STOP \u2192 START (within 5 sec)","Check ED-2: APU START msg \u2192 ext ~50% RPM","Check switch: START ext ~50%, AVAIL lit ~95%"],
+"supp|apu|apu_bl_eoff":["Engines off, establishing APU bleed:","L 10th STAGE \u2192 OFF","APU LCV \u2192 OPEN","ISOL \u2192 OPEN","R 10th STAGE \u2192 OFF","Check ED-2: APU LCV OPEN, L/R 10th CLSD, ISOL OPEN"],
+"supp|apu|apu_bl_a2e":["APU-to-Engine bleed transfer:","R 10th STAGE \u2192 ON","ISOL \u2192 OFF","L 10th STAGE \u2192 ON","APU LCV \u2192 OFF","Check ED-2: L/R 10th CLSD ext, ISOL OPEN ext, APU LCV OPEN ext"],
+"supp|apu|apu_bl_e2a":["Engine-to-APU bleed transfer:","APU LCV \u2192 OPEN","L 10th STAGE \u2192 OFF","ISOL \u2192 OPEN","R 10th STAGE \u2192 OFF","Check ED-2: APU LCV OPEN, L/R 10th CLSD, ISOL OPEN"],
+"supp|apu|apu_sh_eoff":["APU GEN \u2192 OFF","APU START/STOP \u2192 OFF","APU PWR FUEL \u2192 OFF","Check ED-2: APU SOV OPEN ext, DOOR CLSD"],
+"supp|apu|apu_sh_eon":["Accomplish APU\u2192Engine bleed transfer first","APU START/STOP \u2192 OFF","APU PWR FUEL \u2192 OFF","Check ED-2: APU SOV OPEN ext, DOOR CLSD","NOTE: APU GEN remains ON when engines operating"],
+// CRJ-550/700/900 APU
+"supp|apu|apu_gnd_59":["NOTE: PWR/FUEL must be deselected between each start","APU PWR FUEL \u2192 ON","Check ED-2: APU SOV OPEN, IN BITE (5-6s), gauges displayed, DOOR OPEN","APU START/STOP \u2192 START","Check ED-2: APU START msg \u2192 ext prior to 60% RPM","Check switch: START ext <60%, AVAIL lit ~2s after 99%","APU GEN \u2192 AUTO","Check ED-2: AC synoptic \u2014 voltage/freq/load normal","Check ED-2: DC synoptic \u2014 TRU/voltage/load normal"],
+"supp|apu|apu_cs_59":["APU START/STOP \u2192 momentarily START","APU PWR FUEL \u2192 momentarily ON","Then complete normal ground start procedure"],
+"supp|apu|apu_flt_59":["APU PWR FUEL \u2192 ON","APU START/STOP \u2192 START (within 5 sec)","Check ED-2: APU START msg \u2192 ext prior to 60%","Check switch: START ext <60%, AVAIL lit ~2s after 99%","APU GEN \u2192 AUTO"],
+"supp|apu|apu_bl_59":["Normal: BLEED VALVES \u2192 AUTO","If reset needed on ground:","BLEED SOURCE \u2192 APU","BLEED VALVES \u2192 MANUAL","BLEED VALVES \u2192 AUTO","BLEED SOURCE \u2192 BOTH ENG"],
+"supp|apu|apu_sh_59":["APU START/STOP \u2192 OFF","APU PWR FUEL \u2192 OFF","Check ED-2: APU SOV OPEN ext, DOOR CLSD"],
+// Cold WX
+"supp|coldwx|cwx_gen":["ICING CONDITIONS \u2014 ON GROUND/TAKEOFF:","OAT \u226410\u00B0C AND:","  \u2022 Visible moisture, OR","  \u2022 Contaminated ramps/taxiways/runways","ICING CONDITIONS \u2014 IN FLIGHT:","TAT \u226410\u00B0C AND visible moisture","Icing no longer exists: SAT \u2264 -40\u00B0C","T/O prohibited with frost/ice/snow/slush on critical surfaces"],
+"supp|coldwx|cwx_aice_flt":["COWL: ON when flying in icing OR ICE annunciated","WING ON when:","  \u2022 ICE annunciated by detection system, OR","  \u2022 Icing + airspeed <230 KIAS, OR","  \u2022 Icing during descent from cruise (200 only), OR","  \u2022 Prior to flaps when TAT \u226410\u00B0C (200 only)","NOTE (200): Wing A/I may be OFF on final when:","  \u2022 Fully configured, AND","  \u2022 ICE not annunciated, AND","  \u2022 Not in icing conditions","NOTE (200): In climb, select wing ON before cowl (prevents overpressure relief valve opening)","WARNING: Do not reduce below Vref or land with visible ice on wing leading edge"],
+// Continuous Ignition
+"supp|cign|cign_req":["Continuous ignition required for:","  \u2022 T/O and landing on contaminated runways","  \u2022 T/O with crosswind >10 kts (200 only)","  \u2022 Flight through moderate+ rain","  \u2022 Flight through moderate+ turbulence","  \u2022 Flight in vicinity of thunderstorms"],
+};
+
+// ═══ STATE ═══
+let cP="safety",cV="200",N={},SB={};
+const SK="crj-v5",BK="crj-sb-v5";
+let oG=null; // overlay group
+
+// ═══ STORAGE ═══
+async function ld(){
+  try{if(window.storage){
+    let r=await window.storage.get(SK);if(r?.value)N=JSON.parse(r.value);
+    r=await window.storage.get(BK);if(r?.value)SB=JSON.parse(r.value);
+  }}catch(e){}
+  // Init blocks
+  for(const g of SG){
+    for(const v of VR){
+      const k=g.id+"|"+v.id;
+      if(!SB[k])SB[k]=JSON.parse(JSON.stringify(DSB[g.id]?.[v.id]||[]));
+    }
+  }
+  // Inject prepopulated notes only if fresh
+  for(const[k,v]of Object.entries(PREPOP)){
+    if(!N[k]||N[k].length===0)N[k]=[...v];
+  }
+  await sv();
+}
+async function sv(){try{if(window.storage){await window.storage.set(SK,JSON.stringify(N));await window.storage.set(BK,JSON.stringify(SB))}}catch(e){}}
+function gn(k){return N[k]||[]}
+function sn(k,n){N[k]=n;sv()}
+function nk(p,v,t,i,s){let k=`${p}|${v}|${t}|${i}`;if(s)k+=`|${s}`;return k}
+function sbk(g,b){return`supp|${g}|${b}`}
+function getBlocks(gid){return SB[gid+"|"+cV]||[]}
+function getMap(gid){return SM[gid]?.[cV]?.[cP]||null}
+
+// ═══ RENDER ═══
+function cur(){return D[cP]?.[cV]||{tasks:[],steps:[]}}
+function render(){
+  document.getElementById("pt").innerHTML=PG.map(p=>`<button class="ptab ${p.id===cP?'active':''}" onclick="sp('${p.id}')">${p.l}</button>`).join("");
+  setTimeout(()=>{document.getElementById("pt").querySelector(".active")?.scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"})},50);
+  rsb();
+  document.getElementById("vb").innerHTML=VR.map(v=>`<button class="vbtn ${v.id===cV?'active':''}" onclick="sv2('${v.id}')">${v.l}</button>`).join("");
+  const d=cur(),sc=d.steps.length,tc=(d.tasks||[]).length;
+  let ct=sc+" STEP"+(sc!==1?"S":"");if(tc)ct+=` \u00B7 ${tc} TASK`+(tc!==1?"S":"");
+  document.getElementById("sc").textContent=ct;
+  document.getElementById("ca").innerHTML=rts(d)+rfs(d);
+  up();
+}
+
+function rsb(){
+  document.getElementById("sb").innerHTML=SG.map(g=>{
+    const m=getMap(g.id);const dis=!m||m.length===0;
+    const lbl=g.id==="coldwx"?cwl():(g.id==="cign"?"CONT IGN":g.l);
+    return`<button class="sbtn ${g.c} ${dis?'dis':''}" onclick="${dis?'':(`oo('${g.id}')`)}" ${dis?'title="N/A this stage"':''}>${lbl}</button>`;
+  }).join("");
+}
+
+function cwl(){const m={safety:"COLD WX PREFLIGHT",taxi:"COLD WX TAXI",setaxi:"COLD WX TAXI",beforeto:"COLD WX T/O",afterto:"COLD WX FLIGHT",cruise:"COLD WX FLIGHT",descent:"COLD WX FLIGHT",beforeldg:"COLD WX APPROACH"};return m[cP]||"COLD WX"}
+
+function rts(d){
+  const tasks=d.tasks||[];
+  let h=`<div class="shdr"><span class="slbl">Checklist Tasks</span><div class="sln"></div></div>`;
+  if(!tasks.length)return h+`<div class="tpnl"><div class="thdr" style="cursor:default;opacity:.5"><div class="tico none">T</div><div class="tlbl dim">No tasks</div></div></div>`;
+  let it="";
+  tasks.forEach((t,i)=>{
+    const k=nk(cP,cV,"task",i),ns=gn(k),rl=t.role?` <span class="rtag ${t.role.toLowerCase()}">${t.role}</span>`:"";
+    if(d.taskNoteAfter!==undefined&&i===d.taskNoteAfter)it+=`<div style="display:flex;align-items:center;gap:8px;padding:4px 20px"><div style="flex:1;height:1px;border-top:1px dashed var(--ba)"></div><span style="font-family:var(--fm);font-size:9px;color:var(--tm)">${esc(d.taskNote)}</span><div style="flex:1;height:1px;border-top:1px dashed var(--ba)"></div></div>`;
+    it+=`<div class="titm" id="t-${i}"><div class="titmh" onclick="te('t-${i}','ti-${i}')"><span class="ttag">T</span><span class="ttl">${esc(t.title)}${rl}</span><span class="tbdg ${ns.length?'has':''}">${ns.length?ns.length+'n':''}</span><span class="tichv">\u25B6</span></div><div class="tcont">${rn(k,ns)}<div class="aa"><input placeholder="Add note\u2026" id="ti-${i}" onkeydown="if(event.key==='Enter')an('${ek(k)}','ti-${i}')"><button class="abtn" onclick="an('${ek(k)}','ti-${i}')">+ Add</button></div></div></div>`;
+  });
+  return h+`<div class="tpnl" id="tp"><div class="thdr" onclick="document.getElementById('tp').classList.toggle('exp')"><div class="tico has">T</div><div class="tlbl">Tasks</div><div class="tcnt">${tasks.length}</div><div class="tchv">\u25B6</div></div><div class="tbody">${it}</div></div>`;
+}
+
+function rfs(d){
+  const steps=d.steps||[];
+  const rl=d.flowRole?`<span class="rtag ${d.flowRole.toLowerCase()}">${d.flowRole}</span>`:"";
+  const nt=d.flowNote?`<span class="snote">${esc(d.flowNote)}</span>`:"";
+  let h=`<div class="shdr"><span class="slbl">Flow</span>${rl}${nt}<div class="sln"></div></div>`;
+  if(!steps.length)return h+`<div class="nfm">No flow items \u2014 checklist only</div>`;
+  let btl=d.flowNote==="Below the Line"?`<div class="btld"><div class="btll"></div><span class="btlb">Below the Line</span><div class="btll"></div></div>`:"";
+  let o=h+btl;
+  steps.forEach(s=>{
+    const k=nk(cP,cV,"flow",s.num),ns=gn(k);let tn=ns.length;
+    if(s.subs)s.subs.forEach(x=>{tn+=gn(nk(cP,cV,"sub",s.num,x.letter)).length});
+    const ti=(s.ffod?`<span class="ffod">FFOD</span>`:'')+esc(s.title);
+    const si=s.subtitle?`<br><span style="font-size:10px;font-weight:400;color:var(--td)">${esc(s.subtitle)}</span>`:'';
+    let sub='';
+    if(s.subs)sub=s.subs.map(x=>{const sk=nk(cP,cV,"sub",s.num,x.letter),sn2=gn(sk);return`<div class="ffsub"><span class="ffl">${x.letter}</span>${x.ffod?'<span class="ffod" style="margin-right:0">FFOD</span>':''}${esc(x.title)}</div>${rn(sk,sn2)}<div class="aa" style="margin-bottom:8px"><input placeholder="Add note\u2026" id="si-${s.num}-${x.letter}" onkeydown="if(event.key==='Enter')an('${ek(sk)}','si-${s.num}-${x.letter}')"><button class="abtn" onclick="an('${ek(sk)}','si-${s.num}-${x.letter}')">+ Add</button></div>`}).join("");
+    o+=`<div class="fi" id="f-${s.num}"><div class="fh" onclick="te('f-${s.num}','fi-${s.num}')"><div class="fnum">${s.num}</div><div class="ftl">${ti}${si}</div><div class="fbdg ${tn>0?'has':''}">${tn>0?tn+'n':''}</div><div class="fchv">\u25B6</div></div><div class="fcont">${rn(k,ns)}<div class="aa"><input placeholder="Add note\u2026" id="fi-${s.num}" onkeydown="if(event.key==='Enter')an('${ek(k)}','fi-${s.num}')"><button class="abtn" onclick="an('${ek(k)}','fi-${s.num}')">+ Add</button></div>${sub}</div></div>`;
+  });
+  return o;
+}
+
+function rn(k,ns){
+  if(!ns?.length)return`<div class="es">No notes yet</div>`;
+  return`<ul class="sl">${ns.map((n,i)=>`<li class="si" id="n-${ck(k)}-${i}"><div class="sb"></div><div class="st">${esc(n)}</div><div class="sa">${i>0?`<button class="ib" onclick="mn('${ek(k)}',${i},-1)">\u2191</button>`:''} ${i<ns.length-1?`<button class="ib" onclick="mn('${ek(k)}',${i},1)">\u2193</button>`:''}<button class="ib" onclick="en('${ek(k)}',${i})">\u270E</button><button class="ib del" onclick="rn2('${ek(k)}',${i})">\u2715</button></div></li>`).join("")}</ul>`;
+}
+
+// ═══ OVERLAY ═══
+function oo(gid){
+  oG=gid;const g=SG.find(x=>x.id===gid),m=getMap(gid)||[],bl=getBlocks(gid),pl=PG.find(p=>p.id===cP)?.l||cP;
+  const icons={apu:"\u2B50",coldwx:"\u2744\uFE0F",cign:"\uD83D\uDD25"};
+  document.getElementById("ohd").innerHTML=`<div class="ohi ${g.c}">${icons[g.id]||""}</div><div class="oht">${g.l}</div><div class="ohp">${pl} \u00B7 ${cV==="200"?"CRJ-200":"CRJ-5/7/9"}</div><button class="ocl" onclick="co()">\u2715</button>`;
+  rob(gid,m,bl);
+  document.getElementById("obk").classList.add("open");document.getElementById("opn").classList.add("open");
+}
+
+function rob(gid,m,bl){
+  const body=document.getElementById("obd");
+  const vis=bl.filter(b=>m.includes(b.id));
+  let h="";
+  if(!vis.length)h=`<div class="es">No procedures mapped to this stage</div>`;
+  else vis.forEach(b=>{
+    const k=sbk(gid,b.id),ns=gn(k);
+    h+=`<div class="sblk" id="sb-${ck(b.id)}"><div class="sblkh" onclick="document.getElementById('sb-${ck(b.id)}').classList.toggle('exp')"><div class="sblkt">${esc(b.title)}</div><div class="sblkb ${ns.length?'has':''}">${ns.length?ns.length+' note'+(ns.length>1?'s':''):''}</div><div class="sblka"><button class="ib" onclick="event.stopPropagation();rnb('${gid}','${ek(b.id)}')">\u270E</button><button class="ib del" onclick="event.stopPropagation();dlb('${gid}','${ek(b.id)}')">\u2715</button></div><div class="sblkc">\u25B6</div></div><div class="sblkcont">${rn(k,ns)}<div class="aa"><input placeholder="Add note\u2026" id="sbi-${ck(b.id)}" onkeydown="if(event.key==='Enter')asn('${gid}','${ek(b.id)}','sbi-${ck(b.id)}')"><button class="abtn" onclick="asn('${gid}','${ek(b.id)}','sbi-${ck(b.id)}')">+ Add</button></div></div></div>`;
+  });
+  h+=`<div class="oaa"><input placeholder="Add new section\u2026" id="nbi" onkeydown="if(event.key==='Enter')adb('${gid}')"><button class="abtn" onclick="adb('${gid}')">+ Add Section</button></div>`;
+  body.innerHTML=h;
+}
+
+function co(){document.getElementById("obk").classList.remove("open");document.getElementById("opn").classList.remove("open");oG=null}
+function asn(g,bid,iid){const inp=document.getElementById(iid),t=inp.value.trim();if(!t)return;const k=sbk(g,bid),n=gn(k);n.push(t);sn(k,n);rfo();tt("Added")}
+function adb(g){const inp=document.getElementById("nbi"),title=inp.value.trim();if(!title)return;const id="c_"+Date.now();const bl=getBlocks(g);bl.push({id,title});const mk=SM[g];if(!mk[cV])mk[cV]={};if(!mk[cV][cP])mk[cV][cP]=[];mk[cV][cP].push(id);sv();rfo();rsb();tt("Section added")}
+function rnb(g,bid){const bl=getBlocks(g),b=bl.find(x=>x.id===bid);if(!b)return;const t=prompt("Rename:",b.title);if(t?.trim()){b.title=t.trim();sv();rfo();tt("Renamed")}}
+function dlb(g,bid){if(!confirm("Delete section and notes?"))return;const bk=g+"|"+cV;SB[bk]=SB[bk].filter(b=>b.id!==bid);const mk=SM[g];for(const v in mk)for(const p in mk[v])if(Array.isArray(mk[v][p]))mk[v][p]=mk[v][p].filter(i=>i!==bid);delete N[sbk(g,bid)];sv();rfo();rsb();tt("Deleted")}
+function rfo(){if(!oG)return;const m=getMap(oG)||[],bl=getBlocks(oG);const exp=new Set();document.querySelectorAll(".sblk.exp").forEach(e=>exp.add(e.id));rob(oG,m,bl);exp.forEach(id=>document.getElementById(id)?.classList.add("exp"))}
+
+// ═══ ACTIONS ═══
+function sp(id){cP=id;render();if(oG)co()}
+function sv2(id){cV=id;render();if(oG)co()}
+function te(eid,iid){const el=document.getElementById(eid);el.classList.toggle("exp");if(el.classList.contains("exp")&&iid)setTimeout(()=>document.getElementById(iid)?.focus(),50)}
+function taf(e){cur().steps.forEach(s=>{const el=document.getElementById(`f-${s.num}`);if(el){if(e)el.classList.add("exp");else el.classList.remove("exp")}})}
+function an(k,iid){const inp=document.getElementById(iid),t=inp.value.trim();if(!t)return;const n=gn(k);n.push(t);sn(k,n);rr();tt("Added")}
+function rn2(k,i){const n=gn(k);n.splice(i,1);sn(k,n);rr();tt("Removed")}
+function mn(k,i,d){const n=gn(k),j=i+d;if(j<0||j>=n.length)return;[n[i],n[j]]=[n[j],n[i]];sn(k,n);rr()}
+function en(k,i){
+  const el=document.getElementById(`n-${ck(k)}-${i}`);if(!el)return;
+  const ns=gn(k),te2=el.querySelector(".st"),ae=el.querySelector(".sa");
+  te2.innerHTML=`<input class="ei" value="${ea(ns[i])}" id="ed-${ck(k)}-${i}">`;
+  ae.innerHTML=`<button class="ib" onclick="svn('${ek(k)}',${i})" style="color:var(--green)">\u2713</button><button class="ib" onclick="rr()">\u2715</button>`;
+  ae.style.opacity="1";
+  const inp=document.getElementById(`ed-${ck(k)}-${i}`);inp.focus();inp.select();
+  inp.onkeydown=e=>{if(e.key==="Enter")svn(k,i);if(e.key==="Escape")rr()};
+}
+function svn(k,i){const inp=document.getElementById(`ed-${ck(k)}-${i}`),t=inp.value.trim();if(!t)return;const n=gn(k);n[i]=t;sn(k,n);rr();tt("Updated")}
+async function cr(){const l=PG.find(p=>p.id===cP)?.l||cP;if(confirm(`Clear ALL notes for ${l} / ${cV}?`)){const pf=`${cP}|${cV}|`;Object.keys(N).forEach(k=>{if(k.startsWith(pf))delete N[k]});await sv();render();tt("Cleared")}}
+
+function rr(){
+  const ef=new Set(),et=new Set();let tp=document.getElementById("tp")?.classList.contains("exp");
+  document.querySelectorAll(".fi.exp").forEach(e=>ef.add(e.id));document.querySelectorAll(".titm.exp").forEach(e=>et.add(e.id));
+  render();
+  if(tp)document.getElementById("tp")?.classList.add("exp");ef.forEach(id=>document.getElementById(id)?.classList.add("exp"));et.forEach(id=>document.getElementById(id)?.classList.add("exp"));
+}
+
+function up(){
+  const d=cur();let total=d.steps.length+(d.tasks||[]).length;
+  if(!total){document.getElementById("pp").textContent="\u2014";document.getElementById("pf").style.width="0%";return}
+  let f=0;
+  d.steps.forEach(s=>{let h=gn(nk(cP,cV,"flow",s.num)).length>0;if(s.subs)s.subs.forEach(x=>{if(gn(nk(cP,cV,"sub",s.num,x.letter)).length>0)h=true});if(h)f++});
+  (d.tasks||[]).forEach((t,i)=>{if(gn(nk(cP,cV,"task",i)).length>0)f++});
+  const p=Math.round((f/total)*100);document.getElementById("pp").textContent=p+"%";document.getElementById("pf").style.width=p+"%";
+}
+
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+
+// ═══ IMPORT / EXPORT ═══
+function expData(){
+  const payload={version:5,exportedAt:new Date().toISOString(),notes:N,suppBlocks:SB};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=`crj-study-notes-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  tt("Notes exported");
+}
+
+function impData(evt){
+  const file=evt.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data.notes){tt("Invalid file");return}
+      const mode=confirm("MERGE with existing notes?\n\nOK = Merge (keeps existing, adds new)\nCancel = Replace all (overwrites everything)");
+      if(mode){
+        // Merge: for each key, if incoming has notes and existing doesn't, add them; if both have, combine without duplicates
+        for(const[k,v]of Object.entries(data.notes)){
+          if(!N[k]||N[k].length===0)N[k]=v;
+          else{const existing=new Set(N[k]);v.forEach(n=>{if(!existing.has(n))N[k].push(n)})}
+        }
+        if(data.suppBlocks){for(const[k,v]of Object.entries(data.suppBlocks)){if(!SB[k]||SB[k].length===0)SB[k]=v}}
+      }else{
+        N=data.notes;
+        if(data.suppBlocks)SB=data.suppBlocks;
+      }
+      await sv();render();tt("Notes imported");
+    }catch(err){tt("Import failed: "+err.message)}
+  };
+  reader.readAsText(file);
+  evt.target.value=""; // reset so same file can be re-imported
+}
+function ea(s){return s.replace(/"/g,"&quot;").replace(/'/g,"&#39;")}
+function ck(k){return k.replace(/[^a-zA-Z0-9]/g,"_")}
+function ek(k){return k.replace(/'/g,"\\'")}
+function tt(m){const t=document.getElementById("tst");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1400)}
+
+(async()=>{await ld();render()})();
+</script>
+</body>
+</html>
