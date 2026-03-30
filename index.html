@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CRJ Flow Study Guide</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://apis.google.com/js/api.js" async defer></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
   :root{--bg:#0f1117;--surface:#181b24;--sh:#1e2230;--sa:#252a38;--border:#2a2f3e;--ba:#3d4455;--text:#e2e4ea;--td:#8b90a0;--tm:#5c6070;--accent:#f97316;--ad:rgba(249,115,22,.12);--ab:rgba(249,115,22,.3);--green:#22c55e;--gd:rgba(34,197,94,.12);--red:#ef4444;--rd:rgba(239,68,68,.1);--blue:#3b82f6;--bd:rgba(59,130,246,.12);--bb:rgba(59,130,246,.3);--yellow:#eab308;--yd:rgba(234,179,8,.1);--yb:rgba(234,179,8,.3);--purple:#a78bfa;--pd:rgba(167,139,250,.1);--pb:rgba(167,139,250,.3);--cyan:#06b6d4;--cd:rgba(6,182,212,.1);--cb:rgba(6,182,212,.3);--teal:#14b8a6;--tld:rgba(20,184,166,.1);--tlb:rgba(20,184,166,.3);--rose:#f43f5e;--rod:rgba(244,63,94,.1);--rob:rgba(244,63,94,.3);--r:8px;--fm:'JetBrains Mono',monospace;--fs:'IBM Plex Sans',sans-serif}
@@ -109,6 +111,14 @@
   .oaa input{flex:1;font-family:var(--fs);font-size:12px;padding:7px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);outline:none}
   .oaa input::placeholder{color:var(--tm)}.oaa input:focus{border-color:var(--cb)}
   .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(50px);font-family:var(--fs);font-size:12px;padding:8px 18px;border-radius:8px;background:var(--sa);border:1px solid var(--ba);color:var(--text);opacity:0;transition:all .25s ease;pointer-events:none;z-index:300}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  /* Sync bar */
+  .sync-bar{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)}
+  .sync-status{font-family:var(--fm);font-size:10px;color:var(--tm)}
+  .sync-status.ok{color:var(--green)}.sync-status.saving{color:var(--yellow)}.sync-status.err{color:var(--red)}
+  .sync-btn{font-family:var(--fm);font-size:10px;font-weight:600;padding:4px 12px;border-radius:5px;border:1px solid var(--bb);background:var(--bd);color:var(--blue);cursor:pointer;transition:all .15s}
+  .sync-btn:hover{background:var(--blue);color:#fff}
+  .sync-btn.signout{border-color:var(--border);background:var(--surface);color:var(--tm)}
+  .sync-btn.signout:hover{border-color:var(--ba);color:var(--td)}
   ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
   @media(max-width:600px){.app{padding:10px 10px 80px}header h1{font-size:18px}.ptab{padding:7px 9px;font-size:9px}.vbtn{font-size:9px;padding:4px 10px}.opn{max-height:90vh}}
 </style>
@@ -121,6 +131,10 @@
     <div class="sub">Add your own SOPM notes &amp; sub-steps under each item</div>
     <div class="rev">SOPM REV 2025.06 &middot; APU OPS REV 11 (10 APR 24) &middot; Guide v5</div>
   </header>
+  <div class="sync-bar" id="sync-bar">
+    <span class="sync-status" id="sync-status">Google Drive sync: not signed in</span>
+    <button class="sync-btn" id="sync-btn" onclick="gdSignIn()">Sign in to sync</button>
+  </div>
   <div class="sticky">
     <div class="ptabs" id="pt"></div>
     <div class="sbar" id="sb"></div>
@@ -265,13 +279,140 @@ let cP="safety",cV="200",N={},SB={};
 const SK="crj-v5",BK="crj-sb-v5";
 let oG=null; // overlay group
 
-// ═══ STORAGE ═══
+// ═══ GOOGLE DRIVE SYNC ═══
+const GD_CLIENT_ID="1005536080490-25ruuhoiogc1mfg5ug9bq4587n9ebao1.apps.googleusercontent.com";
+const GD_SCOPES="https://www.googleapis.com/auth/drive.file";
+const GD_FILENAME="crj-study-notes-sync.json";
+let gdToken=null;
+let gdFileId=null;
+let gdSaveTimer=null;
+let gdReady=false;
+
+function setSyncStatus(msg,cls){
+  const el=document.getElementById("sync-status");
+  el.textContent=msg;el.className="sync-status"+(cls?" "+cls:"");
+}
+
+function updateSyncUI(){
+  const btn=document.getElementById("sync-btn");
+  if(gdToken){
+    btn.textContent="Sign out";btn.className="sync-btn signout";btn.onclick=gdSignOut;
+  }else{
+    btn.textContent="Sign in to sync";btn.className="sync-btn";btn.onclick=gdSignIn;
+  }
+}
+
+function gdSignIn(){
+  if(!window.google?.accounts?.oauth2){setSyncStatus("Google API not loaded yet","err");return}
+  const client=google.accounts.oauth2.initTokenClient({
+    client_id:GD_CLIENT_ID,scope:GD_SCOPES,
+    callback:async(resp)=>{
+      if(resp.error){setSyncStatus("Auth failed: "+resp.error,"err");return}
+      gdToken=resp.access_token;
+      updateSyncUI();
+      setSyncStatus("Signed in, loading...","saving");
+      try{
+        await gdFindOrCreate();
+        await gdLoad();
+        render();
+        setSyncStatus("Synced with Google Drive","ok");
+      }catch(e){setSyncStatus("Sync error: "+e.message,"err");console.error(e)}
+    }
+  });
+  client.requestAccessToken();
+}
+
+function gdSignOut(){
+  if(gdToken)google.accounts.oauth2.revoke(gdToken);
+  gdToken=null;gdFileId=null;
+  updateSyncUI();
+  setSyncStatus("Signed out \u2014 using local storage only");
+}
+
+async function gdFetch(url,opts={}){
+  const resp=await fetch(url,{...opts,headers:{...opts.headers,Authorization:"Bearer "+gdToken}});
+  if(!resp.ok){
+    const txt=await resp.text();
+    // Token expired
+    if(resp.status===401){gdToken=null;updateSyncUI();setSyncStatus("Session expired \u2014 sign in again","err");throw new Error("Auth expired")}
+    throw new Error(`Drive API ${resp.status}: ${txt}`);
+  }
+  return resp;
+}
+
+async function gdFindOrCreate(){
+  // Search for existing file
+  const q=encodeURIComponent(`name='${GD_FILENAME}' and trashed=false`);
+  const resp=await gdFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&spaces=drive&fields=files(id,name,modifiedTime)`);
+  const data=await resp.json();
+  if(data.files&&data.files.length>0){
+    gdFileId=data.files[0].id;
+    return;
+  }
+  // Create new file
+  const meta={name:GD_FILENAME,mimeType:"application/json"};
+  const createResp=await gdFetch("https://www.googleapis.com/drive/v3/files",{
+    method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(meta)
+  });
+  const created=await createResp.json();
+  gdFileId=created.id;
+  // Write initial empty data
+  await gdSaveNow();
+}
+
+async function gdLoad(){
+  if(!gdToken||!gdFileId)return;
+  try{
+    const resp=await gdFetch(`https://www.googleapis.com/drive/v3/files/${gdFileId}?alt=media`);
+    const text=await resp.text();
+    if(!text||text.trim()==="")return; // empty file, use local
+    const data=JSON.parse(text);
+    if(data.notes)N=data.notes;
+    if(data.suppBlocks)SB=data.suppBlocks;
+    // Also save to local as cache
+    localSave();
+  }catch(e){console.error("gdLoad error:",e)}
+}
+
+async function gdSaveNow(){
+  if(!gdToken||!gdFileId)return;
+  const payload=JSON.stringify({version:5,notes:N,suppBlocks:SB});
+  await gdFetch(`https://www.googleapis.com/upload/drive/v3/files/${gdFileId}?uploadType=media`,{
+    method:"PATCH",headers:{"Content-Type":"application/json"},body:payload
+  });
+}
+
+function gdSaveDebounced(){
+  if(!gdToken)return;
+  clearTimeout(gdSaveTimer);
+  setSyncStatus("Saving...","saving");
+  gdSaveTimer=setTimeout(async()=>{
+    try{
+      await gdSaveNow();
+      setSyncStatus("Synced with Google Drive","ok");
+    }catch(e){
+      setSyncStatus("Save failed: "+e.message,"err");
+      console.error("gdSave error:",e);
+    }
+  },2000);
+}
+
+// ═══ LOCAL STORAGE (fallback/cache) ═══
+function localSave(){
+  try{localStorage.setItem(SK,JSON.stringify(N));localStorage.setItem(BK,JSON.stringify(SB))}catch(e){}
+}
+function localLoad(){
+  try{
+    const n=localStorage.getItem(SK);if(n)N=JSON.parse(n);
+    const b=localStorage.getItem(BK);if(b)SB=JSON.parse(b);
+  }catch(e){}
+}
+
+// ═══ STORAGE (unified) ═══
 async function ld(){
-  try{if(window.storage){
-    let r=await window.storage.get(SK);if(r?.value)N=JSON.parse(r.value);
-    r=await window.storage.get(BK);if(r?.value)SB=JSON.parse(r.value);
-  }}catch(e){}
-  // Init blocks
+  // Try local first as cache
+  localLoad();
+  // Init blocks if missing
   for(const g of SG){
     for(const v of VR){
       const k=g.id+"|"+v.id;
@@ -282,9 +423,13 @@ async function ld(){
   for(const[k,v]of Object.entries(PREPOP)){
     if(!N[k]||N[k].length===0)N[k]=[...v];
   }
-  await sv();
+  localSave();
 }
-async function sv(){try{if(window.storage){await window.storage.set(SK,JSON.stringify(N));await window.storage.set(BK,JSON.stringify(SB))}}catch(e){}}
+
+async function sv(){
+  localSave();
+  gdSaveDebounced();
+}
 function gn(k){return N[k]||[]}
 function sn(k,n){N[k]=n;sv()}
 function nk(p,v,t,i,s){let k=`${p}|${v}|${t}|${i}`;if(s)k+=`|${s}`;return k}
@@ -462,7 +607,12 @@ function ck(k){return k.replace(/[^a-zA-Z0-9]/g,"_")}
 function ek(k){return k.replace(/'/g,"\\'")}
 function tt(m){const t=document.getElementById("tst");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1400)}
 
-(async()=>{await ld();render()})();
+(async()=>{
+  await ld();
+  render();
+  // GDrive: check if user was previously signed in (token won't persist, but we set up the UI)
+  updateSyncUI();
+})();
 </script>
 </body>
 </html>
