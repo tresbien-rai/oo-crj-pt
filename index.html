@@ -76,7 +76,8 @@
   .si{display:flex;align-items:flex-start;gap:8px;padding:5px 8px;border-radius:5px;margin-bottom:2px;transition:background .1s}.si:hover{background:var(--surface)}
   .sb{width:5px;height:5px;border-radius:50%;background:var(--ba);margin-top:7px;flex-shrink:0}
   .st{flex:1;font-size:12px;line-height:1.5;color:var(--text)}
-  .sa{display:flex;gap:2px;opacity:0;transition:opacity .15s;flex-shrink:0}.si:hover .sa{opacity:1}
+  .sa{display:flex;gap:2px;opacity:.35;transition:opacity .15s;flex-shrink:0}.si:hover .sa{opacity:1}
+  @media(hover:none){.sa{opacity:.5}}
   .ib{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:4px;border:none;background:transparent;color:var(--tm);cursor:pointer;font-size:11px;transition:all .12s}
   .ib:hover{background:var(--sa);color:var(--text)}.ib.del:hover{background:var(--rd);color:var(--red)}
   .aa{margin-top:5px;display:flex;gap:5px;align-items:flex-start}
@@ -103,7 +104,8 @@
   .sblkh{display:flex;align-items:center;padding:10px 14px;cursor:pointer;background:var(--surface);gap:10px;user-select:none;transition:background .15s}.sblkh:hover{background:var(--sh)}
   .sblkt{font-size:13px;font-weight:600;flex:1}
   .sblkb{font-family:var(--fm);font-size:10px;color:var(--tm)}.sblkb.has{color:var(--green)}
-  .sblka{display:flex;gap:2px;opacity:0;transition:opacity .15s}.sblkh:hover .sblka{opacity:1}
+  .sblka{display:flex;gap:2px;opacity:.35;transition:opacity .15s}.sblkh:hover .sblka{opacity:1}
+  @media(hover:none){.sblka{opacity:.5}}
   .sblkc{color:var(--tm);transition:transform .2s;font-size:12px}
   .sblk.exp .sblkc{transform:rotate(90deg);color:var(--cyan)}
   .sblkcont{display:none;padding:8px 14px 12px;border-top:1px solid var(--border);background:var(--bg)}.sblk.exp .sblkcont{display:block}
@@ -450,8 +452,30 @@ function render(){
   const d=cur(),sc=d.steps.length,tc=(d.tasks||[]).length;
   let ct=sc+" STEP"+(sc!==1?"S":"");if(tc)ct+=` \u00B7 ${tc} TASK`+(tc!==1?"S":"");
   document.getElementById("sc").textContent=ct;
-  document.getElementById("ca").innerHTML=rts(d)+rfs(d);
+  document.getElementById("ca").innerHTML=rgen()+rts(d)+rfs(d);
   up();
+}
+
+function rgen(){
+  const k=`${cP}|${cV}|general`;
+  const ns=gn(k);
+  const pageLabel=PG.find(p=>p.id===cP)?.l||cP;
+  return`<div class="shdr"><span class="slbl">Notes</span><div class="sln"></div></div>
+  <div class="tpnl" id="gp">
+    <div class="thdr" onclick="document.getElementById('gp').classList.toggle('exp')">
+      <div class="tico ${ns.length?'has':'none'}">\u270D</div>
+      <div class="tlbl">${pageLabel} \u2014 General Notes</div>
+      <div class="tcnt">${ns.length?ns.length+' note'+(ns.length>1?'s':''):''}</div>
+      <div class="tchv">\u25B6</div>
+    </div>
+    <div class="tbody" style="padding:8px 14px 12px">
+      ${rn(k,ns)}
+      <div class="aa">
+        <textarea placeholder="Add a general note for this flow\u2026" rows="1" id="gi" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();an('${ek(k)}','gi')}"></textarea>
+        <button class="abtn" onclick="an('${ek(k)}','gi')">+ Add</button>
+      </div>
+    </div>
+  </div>`;
 }
 
 function rsb(){
@@ -560,8 +584,10 @@ async function cr(){const l=PG.find(p=>p.id===cP)?.l||cP;if(confirm(`Clear ALL n
 
 function rr(){
   const ef=new Set(),et=new Set();let tp=document.getElementById("tp")?.classList.contains("exp");
+  let gp=document.getElementById("gp")?.classList.contains("exp");
   document.querySelectorAll(".fi.exp").forEach(e=>ef.add(e.id));document.querySelectorAll(".titm.exp").forEach(e=>et.add(e.id));
   render();
+  if(gp)document.getElementById("gp")?.classList.add("exp");
   if(tp)document.getElementById("tp")?.classList.add("exp");ef.forEach(id=>document.getElementById(id)?.classList.add("exp"));et.forEach(id=>document.getElementById(id)?.classList.add("exp"));
 }
 
