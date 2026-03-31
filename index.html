@@ -79,11 +79,11 @@
   .sa{display:flex;gap:2px;opacity:0;transition:opacity .15s;flex-shrink:0}.si:hover .sa{opacity:1}
   .ib{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:4px;border:none;background:transparent;color:var(--tm);cursor:pointer;font-size:11px;transition:all .12s}
   .ib:hover{background:var(--sa);color:var(--text)}.ib.del:hover{background:var(--rd);color:var(--red)}
-  .aa{margin-top:5px;display:flex;gap:5px}
-  .aa input{flex:1;font-family:var(--fs);font-size:12px;padding:6px 10px;border-radius:5px;border:1px solid var(--border);background:var(--surface);color:var(--text);outline:none;transition:border-color .15s}
-  .aa input::placeholder{color:var(--tm)}.aa input:focus{border-color:var(--ab)}
-  .abtn{font-family:var(--fs);font-size:11px;font-weight:600;padding:6px 11px;border-radius:5px;border:1px solid var(--ab);background:var(--ad);color:var(--accent);cursor:pointer;transition:all .15s;white-space:nowrap}.abtn:hover{background:var(--accent);color:#fff}
-  .ei{flex:1;font-family:var(--fs);font-size:12px;padding:3px 7px;border-radius:4px;border:1px solid var(--ab);background:var(--surface);color:var(--text);outline:none}
+  .aa{margin-top:5px;display:flex;gap:5px;align-items:flex-start}
+  .aa textarea,.aa input{flex:1;font-family:var(--fs);font-size:12px;padding:6px 10px;border-radius:5px;border:1px solid var(--border);background:var(--surface);color:var(--text);outline:none;transition:border-color .15s;resize:none;overflow:hidden;line-height:1.5;field-sizing:content;min-height:34px}
+  .aa textarea::placeholder,.aa input::placeholder{color:var(--tm)}.aa textarea:focus,.aa input:focus{border-color:var(--ab)}
+  .abtn{font-family:var(--fs);font-size:11px;font-weight:600;padding:6px 11px;border-radius:5px;border:1px solid var(--ab);background:var(--ad);color:var(--accent);cursor:pointer;transition:all .15s;white-space:nowrap;align-self:flex-end;min-height:34px}.abtn:hover{background:var(--accent);color:#fff}
+  .ei{flex:1;font-family:var(--fs);font-size:12px;padding:6px 10px;border-radius:5px;border:1px solid var(--ab);background:var(--surface);color:var(--text);outline:none;resize:none;overflow:hidden;line-height:1.5;field-sizing:content;min-height:34px;display:block;width:100%}
   .es{text-align:center;padding:12px;color:var(--tm);font-size:12px;font-style:italic}
   .nfm{text-align:center;padding:20px 14px;color:var(--tm);font-size:13px;border:1px dashed var(--border);border-radius:var(--r);margin-bottom:4px}
   .btld{display:flex;align-items:center;gap:10px;padding:6px 0 8px;margin-bottom:4px}
@@ -141,11 +141,14 @@
   </div>
   <div class="vbar" id="vb"></div>
   <div class="ctrls"><div class="left" id="sc"></div><div class="acts">
+    <button class="btn" onclick="adjFont(-1)" title="Decrease font size">A-</button>
+    <button class="btn" onclick="adjFont(1)" title="Increase font size">A+</button>
     <button class="btn" onclick="taf(1)">Expand All</button>
     <button class="btn" onclick="taf(0)">Collapse All</button>
+    <button class="btn" onclick="copyToVariant()" title="Copy notes to other variant">&#x21C4; Copy to variant</button>
     <button class="btn" onclick="expData()" title="Download all notes as JSON">&#x2B07; Export</button>
     <button class="btn" onclick="document.getElementById('impFile').click()" title="Import notes from JSON">&#x2B06; Import</button>
-    <button class="btn dng" onclick="cr()">Reset Notes</button>
+    <button class="btn dng" onclick="cr()">Reset</button>
   </div></div>
   <input type="file" id="impFile" accept=".json" style="display:none" onchange="impData(event)">
   <div class="pbc"><div class="plbl"><span>Study progress</span><span id="pp">0%</span></div><div class="ptrk"><div class="pfill" id="pf" style="width:0%"></div></div></div>
@@ -469,7 +472,7 @@ function rts(d){
   tasks.forEach((t,i)=>{
     const k=nk(cP,cV,"task",i),ns=gn(k),rl=t.role?` <span class="rtag ${t.role.toLowerCase()}">${t.role}</span>`:"";
     if(d.taskNoteAfter!==undefined&&i===d.taskNoteAfter)it+=`<div style="display:flex;align-items:center;gap:8px;padding:4px 20px"><div style="flex:1;height:1px;border-top:1px dashed var(--ba)"></div><span style="font-family:var(--fm);font-size:9px;color:var(--tm)">${esc(d.taskNote)}</span><div style="flex:1;height:1px;border-top:1px dashed var(--ba)"></div></div>`;
-    it+=`<div class="titm" id="t-${i}"><div class="titmh" onclick="te('t-${i}','ti-${i}')"><span class="ttag">T</span><span class="ttl">${esc(t.title)}${rl}</span><span class="tbdg ${ns.length?'has':''}">${ns.length?ns.length+'n':''}</span><span class="tichv">\u25B6</span></div><div class="tcont">${rn(k,ns)}<div class="aa"><input placeholder="Add note\u2026" id="ti-${i}" onkeydown="if(event.key==='Enter')an('${ek(k)}','ti-${i}')"><button class="abtn" onclick="an('${ek(k)}','ti-${i}')">+ Add</button></div></div></div>`;
+    it+=`<div class="titm" id="t-${i}"><div class="titmh" onclick="te('t-${i}','ti-${i}')"><span class="ttag">T</span><span class="ttl">${esc(t.title)}${rl}</span><span class="tbdg ${ns.length?'has':''}">${ns.length?ns.length+'n':''}</span><span class="tichv">\u25B6</span></div><div class="tcont">${rn(k,ns)}<div class="aa"><textarea placeholder="Add note…" rows="1" id="ti-${i}" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();an('${ek(k)}','ti-${i}')"></textarea><button class="abtn" onclick="an('${ek(k)}','ti-${i}')">+ Add</button></div></div></div>`;
   });
   return h+`<div class="tpnl" id="tp"><div class="thdr" onclick="document.getElementById('tp').classList.toggle('exp')"><div class="tico has">T</div><div class="tlbl">Tasks</div><div class="tcnt">${tasks.length}</div><div class="tchv">\u25B6</div></div><div class="tbody">${it}</div></div>`;
 }
@@ -488,15 +491,21 @@ function rfs(d){
     const ti=(s.ffod?`<span class="ffod">FFOD</span>`:'')+esc(s.title);
     const si=s.subtitle?`<br><span style="font-size:10px;font-weight:400;color:var(--td)">${esc(s.subtitle)}</span>`:'';
     let sub='';
-    if(s.subs)sub=s.subs.map(x=>{const sk=nk(cP,cV,"sub",s.num,x.letter),sn2=gn(sk);return`<div class="ffsub"><span class="ffl">${x.letter}</span>${x.ffod?'<span class="ffod" style="margin-right:0">FFOD</span>':''}${esc(x.title)}</div>${rn(sk,sn2)}<div class="aa" style="margin-bottom:8px"><input placeholder="Add note\u2026" id="si-${s.num}-${x.letter}" onkeydown="if(event.key==='Enter')an('${ek(sk)}','si-${s.num}-${x.letter}')"><button class="abtn" onclick="an('${ek(sk)}','si-${s.num}-${x.letter}')">+ Add</button></div>`}).join("");
-    o+=`<div class="fi" id="f-${s.num}"><div class="fh" onclick="te('f-${s.num}','fi-${s.num}')"><div class="fnum">${s.num}</div><div class="ftl">${ti}${si}</div><div class="fbdg ${tn>0?'has':''}">${tn>0?tn+'n':''}</div><div class="fchv">\u25B6</div></div><div class="fcont">${rn(k,ns)}<div class="aa"><input placeholder="Add note\u2026" id="fi-${s.num}" onkeydown="if(event.key==='Enter')an('${ek(k)}','fi-${s.num}')"><button class="abtn" onclick="an('${ek(k)}','fi-${s.num}')">+ Add</button></div>${sub}</div></div>`;
+    if(s.subs)sub=s.subs.map(x=>{const sk=nk(cP,cV,"sub",s.num,x.letter),sn2=gn(sk);return`<div class="ffsub"><span class="ffl">${x.letter}</span>${x.ffod?'<span class="ffod" style="margin-right:0">FFOD</span>':''}${esc(x.title)}</div>${rn(sk,sn2)}<div class="aa" style="margin-bottom:8px"><textarea placeholder="Add note…" rows="1" id="si-${s.num}-${x.letter}" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();an('${ek(sk)}','si-${s.num}-${x.letter}')"></textarea><button class="abtn" onclick="an('${ek(sk)}','si-${s.num}-${x.letter}')">+ Add</button></div>`}).join("");
+    o+=`<div class="fi" id="f-${s.num}"><div class="fh" onclick="te('f-${s.num}','fi-${s.num}')"><div class="fnum">${s.num}</div><div class="ftl">${ti}${si}</div><div class="fbdg ${tn>0?'has':''}">${tn>0?tn+'n':''}</div><div class="fchv">\u25B6</div></div><div class="fcont">${rn(k,ns)}<div class="aa"><textarea placeholder="Add note…" rows="1" id="fi-${s.num}" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();an('${ek(k)}','fi-${s.num}')"></textarea><button class="abtn" onclick="an('${ek(k)}','fi-${s.num}')">+ Add</button></div>${sub}</div></div>`;
   });
   return o;
 }
 
 function rn(k,ns){
   if(!ns?.length)return`<div class="es">No notes yet</div>`;
-  return`<ul class="sl">${ns.map((n,i)=>`<li class="si" id="n-${ck(k)}-${i}"><div class="sb"></div><div class="st">${esc(n)}</div><div class="sa">${i>0?`<button class="ib" onclick="mn('${ek(k)}',${i},-1)">\u2191</button>`:''} ${i<ns.length-1?`<button class="ib" onclick="mn('${ek(k)}',${i},1)">\u2193</button>`:''}<button class="ib" onclick="en('${ek(k)}',${i})">\u270E</button><button class="ib del" onclick="rn2('${ek(k)}',${i})">\u2715</button></div></li>`).join("")}</ul>`;
+  return`<ul class="sl">${ns.map((n,i)=>{
+    // Detect if this is a sub-item/indented line (starts with space, bullet, or dash)
+    const isSub=/^[\s\u2022\-\u2013\u2014]/.test(n);
+    const bullet=isSub?'':`<div class="sb"></div>`;
+    const cls=isSub?' style="padding-left:16px"':'';
+    return`<li class="si" id="n-${ck(k)}-${i}"${cls}>${bullet}<div class="st">${esc(n)}</div><div class="sa">${i>0?`<button class="ib" onclick="mn('${ek(k)}',${i},-1)">\u2191</button>`:''} ${i<ns.length-1?`<button class="ib" onclick="mn('${ek(k)}',${i},1)">\u2193</button>`:''}<button class="ib" onclick="en('${ek(k)}',${i})">\u270E</button><button class="ib del" onclick="rn2('${ek(k)}',${i})">\u2715</button></div></li>`;
+  }).join("")}</ul>`;
 }
 
 // ═══ OVERLAY ═══
@@ -515,7 +524,7 @@ function rob(gid,m,bl){
   if(!vis.length)h=`<div class="es">No procedures mapped to this stage</div>`;
   else vis.forEach(b=>{
     const k=sbk(gid,b.id),ns=gn(k);
-    h+=`<div class="sblk" id="sb-${ck(b.id)}"><div class="sblkh" onclick="document.getElementById('sb-${ck(b.id)}').classList.toggle('exp')"><div class="sblkt">${esc(b.title)}</div><div class="sblkb ${ns.length?'has':''}">${ns.length?ns.length+' note'+(ns.length>1?'s':''):''}</div><div class="sblka"><button class="ib" onclick="event.stopPropagation();rnb('${gid}','${ek(b.id)}')">\u270E</button><button class="ib del" onclick="event.stopPropagation();dlb('${gid}','${ek(b.id)}')">\u2715</button></div><div class="sblkc">\u25B6</div></div><div class="sblkcont">${rn(k,ns)}<div class="aa"><input placeholder="Add note\u2026" id="sbi-${ck(b.id)}" onkeydown="if(event.key==='Enter')asn('${gid}','${ek(b.id)}','sbi-${ck(b.id)}')"><button class="abtn" onclick="asn('${gid}','${ek(b.id)}','sbi-${ck(b.id)}')">+ Add</button></div></div></div>`;
+    h+=`<div class="sblk" id="sb-${ck(b.id)}"><div class="sblkh" onclick="document.getElementById('sb-${ck(b.id)}').classList.toggle('exp')"><div class="sblkt">${esc(b.title)}</div><div class="sblkb ${ns.length?'has':''}">${ns.length?ns.length+' note'+(ns.length>1?'s':''):''}</div><div class="sblka"><button class="ib" onclick="event.stopPropagation();rnb('${gid}','${ek(b.id)}')">\u270E</button><button class="ib del" onclick="event.stopPropagation();dlb('${gid}','${ek(b.id)}')">\u2715</button></div><div class="sblkc">\u25B6</div></div><div class="sblkcont">${rn(k,ns)}<div class="aa"><textarea placeholder="Add note…" rows="1" id="sbi-${ck(b.id)}" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();asn('${gid}','${ek(b.id)}','sbi-${ck(b.id)}')"></textarea><button class="abtn" onclick="asn('${gid}','${ek(b.id)}','sbi-${ck(b.id)}')">+ Add</button></div></div></div>`;
   });
   h+=`<div class="oaa"><input placeholder="Add new section\u2026" id="nbi" onkeydown="if(event.key==='Enter')adb('${gid}')"><button class="abtn" onclick="adb('${gid}')">+ Add Section</button></div>`;
   body.innerHTML=h;
@@ -539,11 +548,12 @@ function mn(k,i,d){const n=gn(k),j=i+d;if(j<0||j>=n.length)return;[n[i],n[j]]=[n
 function en(k,i){
   const el=document.getElementById(`n-${ck(k)}-${i}`);if(!el)return;
   const ns=gn(k),te2=el.querySelector(".st"),ae=el.querySelector(".sa");
-  te2.innerHTML=`<input class="ei" value="${ea(ns[i])}" id="ed-${ck(k)}-${i}">`;
+  te2.innerHTML=`<textarea class="ei" id="ed-${ck(k)}-${i}">${ea(ns[i])}</textarea>`;
   ae.innerHTML=`<button class="ib" onclick="svn('${ek(k)}',${i})" style="color:var(--green)">\u2713</button><button class="ib" onclick="rr()">\u2715</button>`;
-  ae.style.opacity="1";
-  const inp=document.getElementById(`ed-${ck(k)}-${i}`);inp.focus();inp.select();
-  inp.onkeydown=e=>{if(e.key==="Enter")svn(k,i);if(e.key==="Escape")rr()};
+  ae.style.opacity="1";ae.style.alignSelf="flex-start";ae.style.marginTop="6px";
+  const inp=document.getElementById(`ed-${ck(k)}-${i}`);
+  setTimeout(()=>{autoGrow(inp);inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length)},20);
+  inp.onkeydown=e=>{if(e.key==="Escape")rr()};
 }
 function svn(k,i){const inp=document.getElementById(`ed-${ck(k)}-${i}`),t=inp.value.trim();if(!t)return;const n=gn(k);n[i]=t;sn(k,n);rr();tt("Updated")}
 async function cr(){const l=PG.find(p=>p.id===cP)?.l||cP;if(confirm(`Clear ALL notes for ${l} / ${cV}?`)){const pf=`${cP}|${cV}|`;Object.keys(N).forEach(k=>{if(k.startsWith(pf))delete N[k]});await sv();render();tt("Cleared")}}
@@ -607,10 +617,60 @@ function ck(k){return k.replace(/[^a-zA-Z0-9]/g,"_")}
 function ek(k){return k.replace(/'/g,"\\'")}
 function tt(m){const t=document.getElementById("tst");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1400)}
 
+// ═══ FONT SIZE ═══
+let fontSize=parseInt(localStorage.getItem("crj-fontsize"))||12;
+function adjFont(dir){
+  fontSize=Math.max(9,Math.min(18,fontSize+dir));
+  document.querySelector(".app").style.fontSize=fontSize+"px";
+  localStorage.setItem("crj-fontsize",fontSize);
+  tt("Font size: "+fontSize+"px");
+}
+
+// Auto-resize textareas (fallback for browsers without field-sizing:content)
+function autoGrow(el){el.style.height="auto";el.style.height=el.scrollHeight+"px"}
+document.addEventListener("input",function(e){if(e.target.tagName==="TEXTAREA")autoGrow(e.target)});
+// Also resize on focus (for edit fields that get content injected)
+document.addEventListener("focus",function(e){if(e.target.tagName==="TEXTAREA")setTimeout(()=>autoGrow(e.target),10)},true);
+
+// ═══ COPY TO OTHER VARIANT ═══
+function copyToVariant(){
+  const otherV=cV==="200"?"5-900":"200";
+  const otherLabel=cV==="200"?"CRJ-500/700/900":"CRJ-200";
+  const pageLabel=PG.find(p=>p.id===cP)?.l||cP;
+
+  // Gather all notes for current page+variant
+  const prefix=`${cP}|${cV}|`;
+  const toCopy={};
+  let count=0;
+  for(const[k,v]of Object.entries(N)){
+    if(k.startsWith(prefix)&&v.length>0){
+      const targetKey=k.replace(prefix,`${cP}|${otherV}|`);
+      toCopy[targetKey]=v;
+      count+=v.length;
+    }
+  }
+
+  if(count===0){tt("No notes to copy on this page");return}
+
+  const mode=confirm(
+    `Copy ${count} note(s) from ${pageLabel} to ${otherLabel}?\n\nOK = Merge (add without duplicates)\nCancel = Abort`
+  );
+  if(!mode)return;
+
+  for(const[k,v]of Object.entries(toCopy)){
+    if(!N[k])N[k]=[];
+    const existing=new Set(N[k]);
+    let added=0;
+    v.forEach(n=>{if(!existing.has(n)){N[k].push(n);added++}});
+  }
+  sv();
+  tt(`Copied to ${otherLabel}`);
+}
+
 (async()=>{
   await ld();
+  if(fontSize!==12)document.querySelector(".app").style.fontSize=fontSize+"px";
   render();
-  // GDrive: check if user was previously signed in (token won't persist, but we set up the UI)
   updateSyncUI();
 })();
 </script>
