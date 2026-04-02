@@ -338,7 +338,6 @@ async function gdFetch(url,opts={}){
   const resp=await fetch(url,{...opts,headers:{...opts.headers,Authorization:"Bearer "+gdToken}});
   if(!resp.ok){
     const txt=await resp.text();
-    // Token expired
     if(resp.status===401){gdToken=null;updateSyncUI();setSyncStatus("Session expired \u2014 sign in again","err");throw new Error("Auth expired")}
     throw new Error(`Drive API ${resp.status}: ${txt}`);
   }
@@ -346,7 +345,6 @@ async function gdFetch(url,opts={}){
 }
 
 async function gdFindOrCreate(){
-  // Search for existing file
   const q=encodeURIComponent(`name='${GD_FILENAME}' and trashed=false`);
   const resp=await gdFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&spaces=drive&fields=files(id,name,modifiedTime)`);
   const data=await resp.json();
@@ -354,34 +352,96 @@ async function gdFindOrCreate(){
     gdFileId=data.files[0].id;
     return;
   }
-  // Create new file
   const meta={name:GD_FILENAME,mimeType:"application/json"};
   const createResp=await gdFetch("https://www.googleapis.com/drive/v3/files",{
     method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(meta)
   });
   const created=await createResp.json();
   gdFileId=created.id;
-  // Write initial empty data
   await gdSaveNow();
 }
+
+// Count total notes across all keys
+function countNotes(obj){let c=0;for(const v of Object.values(obj)){if(Array.isArray(v))c+=v.length}return c}
 
 async function gdLoad(){
   if(!gdToken||!gdFileId)return;
   try{
     const resp=await gdFetch(`https://www.googleapis.com/drive/v3/files/${gdFileId}?alt=media`);
     const text=await resp.text();
-    if(!text||text.trim()==="")return; // empty file, use local
-    const data=JSON.parse(text);
-    if(data.notes)N=data.notes;
-    if(data.suppBlocks)SB=data.suppBlocks;
-    // Also save to local as cache
-    localSave();
+    if(!text||text.trim()===""){
+      // Empty Drive file — push local up
+      await gdSaveNow();
+      return;
+    }
+    const remote=JSON.parse(text);
+    const remoteTime=remote.lastModified||0;
+    const localTime=parseInt(localStorage.getItem("crj-last-modified"))||0;
+    const localNoteCount=countNotes(N);
+    const remoteNoteCount=remote.notes?countNotes(remote.notes):0;
+
+    if(localTime>remoteTime && localNoteCount>=remoteNoteCount){
+      // Local is newer AND has at least as many notes — push local to Drive
+      setSyncStatus("Local is newer \u2014 uploading to Drive...","saving");
+      await gdSaveNow();
+      setSyncStatus("Synced (local \u2192 Drive)","ok");
+    } else if(remoteTime>localTime && remoteNoteCount>=localNoteCount){
+      // Remote is newer AND has at least as many notes — pull remote
+      N=remote.notes;
+      if(remote.suppBlocks)SB=remote.suppBlocks;
+      localSave();
+    } else if(localNoteCount>remoteNoteCount){
+      // Conflict: local has more notes regardless of timestamps — local wins, but ask
+      const localWins=confirm(
+        `Sync conflict detected!\n\n`+
+        `Local: ${localNoteCount} notes (saved ${localTime?new Date(localTime).toLocaleString():'unknown'})\n`+
+        `Drive: ${remoteNoteCount} notes (saved ${remoteTime?new Date(remoteTime).toLocaleString():'unknown'})\n\n`+
+        `OK = Keep local (more notes) and upload to Drive\n`+
+        `Cancel = Merge both (combine all notes)`
+      );
+      if(localWins){
+        await gdSaveNow();
+      }else{
+        // Merge: for each key, combine without duplicates
+        for(const[k,v]of Object.entries(remote.notes)){
+          if(!N[k]||N[k].length===0)N[k]=v;
+          else{const existing=new Set(N[k]);v.forEach(n=>{if(!existing.has(n))N[k].push(n)})}
+        }
+        localSave();
+        await gdSaveNow();
+      }
+    } else if(remoteNoteCount>localNoteCount){
+      // Remote has more notes — remote wins, but ask
+      const remoteWins=confirm(
+        `Sync conflict detected!\n\n`+
+        `Local: ${localNoteCount} notes (saved ${localTime?new Date(localTime).toLocaleString():'unknown'})\n`+
+        `Drive: ${remoteNoteCount} notes (saved ${remoteTime?new Date(remoteTime).toLocaleString():'unknown'})\n\n`+
+        `OK = Use Drive version (more notes)\n`+
+        `Cancel = Merge both (combine all notes)`
+      );
+      if(remoteWins){
+        N=remote.notes;if(remote.suppBlocks)SB=remote.suppBlocks;
+        localSave();
+      }else{
+        for(const[k,v]of Object.entries(remote.notes)){
+          if(!N[k]||N[k].length===0)N[k]=v;
+          else{const existing=new Set(N[k]);v.forEach(n=>{if(!existing.has(n))N[k].push(n)})}
+        }
+        localSave();
+        await gdSaveNow();
+      }
+    } else {
+      // Same count, same time, or both zero — just use local and push
+      await gdSaveNow();
+    }
   }catch(e){console.error("gdLoad error:",e)}
 }
 
 async function gdSaveNow(){
   if(!gdToken||!gdFileId)return;
-  const payload=JSON.stringify({version:5,notes:N,suppBlocks:SB});
+  const ts=Date.now();
+  localStorage.setItem("crj-last-modified",ts.toString());
+  const payload=JSON.stringify({version:5,lastModified:ts,notes:N,suppBlocks:SB});
   await gdFetch(`https://www.googleapis.com/upload/drive/v3/files/${gdFileId}?uploadType=media`,{
     method:"PATCH",headers:{"Content-Type":"application/json"},body:payload
   });
@@ -404,7 +464,11 @@ function gdSaveDebounced(){
 
 // ═══ LOCAL STORAGE (fallback/cache) ═══
 function localSave(){
-  try{localStorage.setItem(SK,JSON.stringify(N));localStorage.setItem(BK,JSON.stringify(SB))}catch(e){}
+  try{
+    localStorage.setItem(SK,JSON.stringify(N));
+    localStorage.setItem(BK,JSON.stringify(SB));
+    localStorage.setItem("crj-last-modified",Date.now().toString());
+  }catch(e){}
 }
 function localLoad(){
   try{
